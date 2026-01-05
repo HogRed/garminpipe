@@ -20,5 +20,6 @@ def weekly_rollup(df: pd.DataFrame) -> pd.DataFrame:
             elevation_gain_m=("elevation_gain_m", "sum"),
         )
     )
-    agg["total_distance_km"] = agg["total_distance_m"] / 1000.0
+    agg["total_distance_km"] = (agg["total_distance_m"] / 1000.0).round(2)
+    agg["total_duration_hr"] = (agg["total_duration_s"] / 3600.0).round(2)
     return agg

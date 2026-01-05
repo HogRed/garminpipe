@@ -29,6 +29,11 @@ def clean_activities(df: pd.DataFrame) -> pd.DataFrame:
 
     # Week start (Monday)
     if "start_time" in out.columns:
-        out["week_start"] = out["start_time"].dt.to_period("W-MON").dt.start_time.dt.tz_localize("UTC")
+        # Week start (Monday), preserving tz-awareness (UTC)
+        st = out["start_time"]
+        
+        # Ensure UTC tz-aware
+        st = pd.to_datetime(st, utc=True, errors="coerce")
+        out["week_start"] = (st - pd.to_timedelta(st.dt.weekday, unit="D")).dt.normalize()
 
     return out
