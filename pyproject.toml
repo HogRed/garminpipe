@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "garminpipe"
+version = "0.1.0"
+description = "Personal Garmin Connect sync -> Parquet + analysis-friendly helpers"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Your Name" }]
+dependencies = [
+  "garth>=0.5.0",
+  "pandas>=2.0.0",
+  "pyarrow>=14.0.0",
+  "python-dateutil>=2.8.2",
+  "typer>=0.9.0",
+  "rich>=13.0.0",
+]
+
+[project.scripts]
+garminpipe = "garminpipe.cli.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["garminpipe"]
