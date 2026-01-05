@@ -1,6 +1,6 @@
 # garminpipe
 
-Sync Garmin Connect activities to a local Parquet file and provide analysis-friendly helpers.
+Sync Garmin Connect activities to a local Parquet file and provide analysis-friendly helpers. This project is still in the early stages, so all functionality is not there yet.
 
 ## Install (dev)
 pip install -e .

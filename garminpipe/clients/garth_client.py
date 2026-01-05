@@ -8,12 +8,12 @@ from typing import Any, Dict, List, Optional
 import garth
 from garth.exc import GarthException
 
-
 @dataclass
 class GarthClient:
     """
     Thin adapter around garth.
-    Auth pattern follows garth docs: resume() first, login() if needed, then save(). :contentReference[oaicite:3]{index=3}
+    Auth pattern follows garth docs: resume() first, login() if needed,
+    then save(). :contentReference[oaicite:3]{index=3}
     """
     session_dir: Path
 
@@ -25,15 +25,18 @@ class GarthClient:
             return
         except Exception:
             pass
-
+        
+        # if no email or password, cannot login
         if not email or not password:
             raise RuntimeError(
                 "No valid session found. Provide email/password (CLI: garminpipe auth login) to create one."
             )
-
+        
+        # otherwise, login
         garth.login(email, password, prompt_mfa=prompt_mfa)
         garth.save(str(self.session_dir))
 
+    # list activities using the Connect endpoint
     def list_activities(
         self,
         start_date: date,
@@ -44,24 +47,28 @@ class GarthClient:
     ) -> List[Dict[str, Any]]:
         """
         Uses the Connect endpoint commonly used for activity listing:
-        /activitylist-service/activities/search/activities :contentReference[oaicite:4]{index=4}
+        /activitylist-service/activities/search/activities
 
         Params are somewhat flexible; Garmin may change behavior over time.
         """
+        # build params
         params: Dict[str, Any] = {
             "startDate": start_date.isoformat(),
             "endDate": end_date.isoformat(),
             "start": start,
             "limit": limit,
         }
+        # add activity type if given
         if activity_type:
             params["activityType"] = activity_type
 
+        # make request
         try:
             return garth.connectapi("/activitylist-service/activities/search/activities", params=params)
         except GarthException as e:
             raise RuntimeError(f"Garmin request failed: {e}") from e
 
+    # method to just resume session
     def resume(self) -> bool:
         try:
             garth.resume(str(self.session_dir))

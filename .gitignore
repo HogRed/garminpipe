@@ -19,7 +19,7 @@ Thumbs.db
 # --- Local config / secrets ---
 .env
 
-# --- garminpipe local artifacts (do not commit) ---
+# --- garminpipe local artifacts ---
 activities.parquet
 cursor.json
 garminpipe-data/
@@ -27,3 +27,6 @@ garminpipe-data/
 # --- garth session (tokens/cookies) ---
 .config/
 **/garth/
+
+# --- testing ---
+scripts/smoke_test.py

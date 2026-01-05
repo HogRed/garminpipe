@@ -9,7 +9,7 @@ description = "Personal Garmin Connect sync -> Parquet + analysis-friendly helpe
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Your Name" }]
+authors = [{ name = "Joe Faith" }]
 dependencies = [
   "garth>=0.5.0",
   "pandas>=2.0.0",

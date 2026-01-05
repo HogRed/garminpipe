@@ -16,6 +16,7 @@ from garminpipe.transform.aggregates import weekly_rollup
 @dataclass
 class GarminPipe:
     config: GarminPipeConfig = GarminPipeConfig()
+    last_sync_summary: dict | None = None
 
     def __post_init__(self) -> None:
         self.config.ensure_dirs()
@@ -32,7 +33,9 @@ class GarminPipe:
         self._client.resume_or_login(email=email, password=password, prompt_mfa=prompt_mfa)
 
     def sync(self) -> pd.DataFrame:
-        return self._sync.sync()
+        df_new = self._sync.sync()
+        self.last_sync_summary = getattr(self._sync, "last_summary", None)
+        return df_new
 
     def activities(self) -> pd.DataFrame:
         return self._store.read_activities()
