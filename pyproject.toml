@@ -24,3 +24,6 @@ garminpipe = "garminpipe.cli.main:app"
 
 [tool.hatch.build.targets.wheel]
 packages = ["garminpipe"]
+
+[project.optional-dependencies]
+viz = ["matplotlib>=3.8"]

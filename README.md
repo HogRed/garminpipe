@@ -15,7 +15,16 @@ garminpipe sync
 ```python
 from garminpipe import GarminPipe
 
-pipe = GarminPipe()
-df = pipe.activities()
-df_clean = pipe.clean(df)
-weekly = pipe.weekly(df_clean)
+pipe = GarminPipe() # establish connection to Garmin
+df = pipe.activities() # get data
+df_new = pipe.sync() # sync / update
+df_clean = pipe.clean(df) # clean fields
+weekly = pipe.weekly() # get weekly aggregated data
+weekly_by_type = pipe.weekly_by_type() # get weekly data by activity type
+
+# example plot
+fig1, ax1 = plot_weekly_metric(
+        weekly,
+        metric="total_distance_miles",
+        title="Weekly distance (miles)"
+    )
