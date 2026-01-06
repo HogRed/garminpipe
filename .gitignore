@@ -30,3 +30,6 @@ garminpipe-data/
 
 # --- testing ---
 scripts/smoke_test.py
+
+# --- testing plots ---
+.png
