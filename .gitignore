@@ -32,4 +32,4 @@ garminpipe-data/
 scripts/smoke_test.py
 
 # --- testing plots ---
-.png
+*.png
