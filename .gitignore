@@ -29,7 +29,7 @@ garminpipe-data/
 **/garth/
 
 # --- testing ---
-scripts/
+src/scripts/
 
 # --- testing plots ---
 *.png
