@@ -29,7 +29,7 @@ garminpipe-data/
 **/garth/
 
 # --- testing ---
-scripts/smoke_test.py
+*scripts/
 
 # --- testing plots ---
 *.png
