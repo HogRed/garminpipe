@@ -10,7 +10,7 @@ from garminpipe.clients.garth_client import GarthClient
 from garminpipe.store.parquet_store import ParquetStore
 from garminpipe.sync.engine import SyncEngine
 from garminpipe.transform.clean import clean_activities
-from garminpipe.transform.aggregates import weekly_rollup, weekly_rollup_by_type
+from garminpipe.transform.aggregates import weekly_rollup, weekly_rollup_by_type, weekly_hr_rollup
 
 
 @dataclass
@@ -50,6 +50,10 @@ class GarminPipe:
     def weekly_by_type(self, df: Optional[pd.DataFrame] = None) -> pd.DataFrame:
         cleaned = self.clean(df)
         return weekly_rollup_by_type(cleaned)
+    
+    def weekly_hr_zones(self, df: Optional[pd.DataFrame] = None) -> pd.DataFrame:
+        cleaned = self.clean(df)
+        return weekly_hr_rollup(cleaned)
 
     def resume(self) -> bool:
         return self._client.resume()

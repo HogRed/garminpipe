@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pandas as pd
+import numpy as np
 
 
 def weekly_rollup(df: pd.DataFrame) -> pd.DataFrame:
@@ -95,3 +96,59 @@ def weekly_rollup_by_type(df: pd.DataFrame) -> pd.DataFrame:
     agg = agg.sort_values(["activity_type", "week_start"])
 
     return agg
+
+def weekly_hr_rollup(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Weekly HR rollup for intensity plots.
+
+    Expects:
+      - week_start (tz-aware datetime recommended; produced by clean_activities)
+      - avg_hr_bpm (may have NaNs)
+      - max_hr_bpm (may have NaNs)
+
+    Returns:
+      week_start,
+      avg_hr_mean_bpm (mean of avg_hr_bpm),
+      max_hr_mean_bpm (mean of max_hr_bpm),
+      max_hr_max_bpm  (max of max_hr_bpm)
+    """
+    if df.empty:
+        return df.copy()
+
+    if "week_start" not in df.columns:
+        raise ValueError("weekly_hr_rollup expects a 'week_start' column. Run clean_activities() first.")
+
+    d = df.copy()
+
+    # Coerce HR columns to numeric if present
+    for c in ["avg_hr_bpm", "max_hr_bpm"]:
+        if c in d.columns:
+            d[c] = pd.to_numeric(d[c], errors="coerce")
+        else:
+            # If missing, add as all-NaN so aggregation still works
+            d[c] = pd.NA
+
+    agg = (
+        d.groupby("week_start", as_index=False)
+        .agg(
+            avg_hr_mean_bpm=("avg_hr_bpm", "mean"),
+            max_hr_mean_bpm=("max_hr_bpm", "mean"),
+            max_hr_max_bpm=("max_hr_bpm", "max"),
+        )
+    )
+
+    return agg.sort_values("week_start")
+
+def weekly_training_load_rollup(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return df.copy()
+    if "week_start" not in df.columns:
+        raise ValueError("weekly_training_load_rollup expects 'week_start'. Run clean_activities() first.")
+    if "training_load" not in df.columns:
+        raise ValueError("training_load column missing. Persist activityTrainingLoad as training_load first.")
+
+    d = df.copy()
+    d["training_load"] = pd.to_numeric(d["training_load"], errors="coerce").fillna(0.0)
+
+    agg = d.groupby("week_start", as_index=False).agg(training_load_total=("training_load", "sum"))
+    return agg.sort_values("week_start")

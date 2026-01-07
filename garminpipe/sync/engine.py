@@ -151,6 +151,12 @@ class SyncEngine:
                     "device_name": a.get("deviceName"),
                     "ingested_at": ingested_at,
                     "source": "garth",
+                    "hr_zone1_s": a.get("hrTimeInZone_1"),
+                    "hr_zone2_s": a.get("hrTimeInZone_2"),
+                    "hr_zone3_s": a.get("hrTimeInZone_3"),
+                    "hr_zone4_s": a.get("hrTimeInZone_4"),
+                    "hr_zone5_s": a.get("hrTimeInZone_5"),
+                    "training_load": a.get("activityTrainingLoad"),
                 }
             )
 
@@ -169,6 +175,12 @@ class SyncEngine:
             "max_hr_bpm",
             "calories_kcal",
             "elevation_gain_m",
+            "hr_zone1_s",
+            "hr_zone2_s",
+            "hr_zone3_s",
+            "hr_zone4_s",
+            "hr_zone5_s",
+            'training_load',
         ]
         for c in numeric_cols:
             if c in df.columns:

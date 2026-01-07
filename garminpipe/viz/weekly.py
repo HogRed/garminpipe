@@ -151,13 +151,14 @@ def plot_weekly_by_type(
     else:
         fig = ax.figure
 
-    # facet plot to be based on activity type (run, walk, etc.)
+    # plot to be based on activity type (run, walk, etc.)
     grouped = w.groupby("activity_type")
 
     # plot each activity type on the same plot, each with their own color
     for atype, df_atype in grouped:
         label = atype if atype is not None else "all"
         ax.plot(df_atype["week_start"], df_atype[metric], marker="o", label=label)
+
     ax.set_xlabel("Week starting")
     ax.set_ylabel(metric.replace("_", " "))
     ax.grid(True, alpha=0.3)
@@ -165,6 +166,68 @@ def plot_weekly_by_type(
         title = f"Weekly {metric.replace('_', ' ')} by activity type"
     ax.set_title(title)
     ax.legend(title="Activity type")
+    fig.autofmt_xdate()
+
+    return fig, ax
+
+def plot_weekly_hr_zone_stack(
+    weekly_zones: pd.DataFrame,
+    normalize: bool = False,
+    ax=None,
+    title: Optional[str] = None,
+) -> Tuple["plt.Figure", "plt.Axes"]:
+    """
+    Stacked bar chart of HR zone minutes (or percent) by week.
+
+    weekly_zones: output of weekly_hr_zone_rollup()
+    normalize: if True, plot zone%i_pct (0-100). else plot zone%i_min.
+    """
+    # error handling
+    if weekly_zones.empty:
+        raise ValueError("weekly_zones dataframe is empty")
+
+    if "week_start" not in weekly_zones.columns:
+        raise ValueError("weekly_zones must contain 'week_start'")
+
+    w = weekly_zones.copy() # copy
+
+    # ensure week_start is datetime
+    w["week_start"] = pd.to_datetime(w["week_start"], errors="coerce", utc=True)
+    w = w.sort_values("week_start")
+    x = w["week_start"].dt.tz_convert(None)
+
+    # determine metric columns to plot
+    metric_cols = [f"zone{i}_{'pct' if normalize else 'min'}" for i in range(1, 6)]
+    # see if missing cols; if so, error
+    missing = [c for c in metric_cols if c not in w.columns]
+    if missing:
+        raise ValueError(f"Missing expected columns for plot: {missing}")
+
+    # if no ax, create new figure
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.figure
+
+    # bottom is for stacking
+    bottom = None
+
+    # plot each zone
+    for c in metric_cols:
+        y = w[c].astype(float).fillna(0.0)
+        if bottom is None:
+            ax.bar(x, y, label=c) # plot bar
+            bottom = y # set bottom for next
+        else:
+            ax.bar(x, y, bottom=bottom, label=c, width=6) # plot bar stacked on previous
+            bottom = bottom + y # update bottom
+
+    # labels and title
+    ax.set_xlabel("Week start")
+    ax.set_ylabel("Percent of zone time" if normalize else "Minutes in HR zones")
+    ax.set_title(title or ("Weekly HR zone distribution (%)" if normalize else "Weekly HR zone time (minutes)"))
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc="upper left", ncols=2, fontsize="small")
     fig.autofmt_xdate()
 
     return fig, ax
